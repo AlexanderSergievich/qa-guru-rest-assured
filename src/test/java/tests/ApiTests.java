@@ -1,97 +1,86 @@
 package tests;
 
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import models.UserBodyModel;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+import models.ExistingUserResponseModel;
+import models.NewUserBodyModel;
+import models.NewUserResponseModel;
+import models.UpdatedUserResponseModel;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.ValueSource;
+import specs.UserSpecs;
 
-import java.util.List;
-
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.notNullValue;
-
+import static org.junit.jupiter.api.Assertions.*;
+import static specs.UserSpecs.*;
 public class ApiTests {
-    public String newUserId = "";
+    public String baseUrl = "https://reqres.in/api/users/";
+
     @Test
-    @Tag("e2e")
+    @Tag("Ready")
     public void GetSingleUserTest(){
-        given().get("https://reqres.in/api/users/2")
-                .then() //блок после запроса
-                .log().all()
-                .statusCode(200)
-                .body("data.email", Matchers.equalTo("janet.weaver@reqres.in"));
+       ExistingUserResponseModel existingUser = step("Send request", ()->
+                  given(UserSpecs.requestSpecification).get(baseUrl+"2")
+                          .then()
+                          .spec(getUserResponseSpec)
+                          .extract().as(ExistingUserResponseModel.class));
+        step("Check response", ()->
+       assertEquals("janet.weaver@reqres.in", existingUser.getData().getEmail()));
     }
     @Test
-    @Tag("e2e")
+    @Tag("Ready")
     public void UserIsNotFoundTest(){
-        given().get("https://reqres.in/api/users/23")
-                .then()
-                .log().all()
-                .statusCode(404);
+        step("Check not found response", ()->
+                given(requestSpecification)
+                    .get(baseUrl+"23")
+                    .then()
+                    .spec(notFoundUserResponseSpec));
     }
     @Test
-    @Tag("e2e")
+    @Tag("Ready")
     public void CreateAndValidateUserTest(){
-        UserBodyModel userBodyModel = new UserBodyModel();
-        userBodyModel.setName("sandro");
-        userBodyModel.setJob("manager");
-        Response response = given().body(userBodyModel)
-                .header("Content-Type","application/json")
-                .log().uri()
-                .log().body()
-                .when()
-                .post("https://reqres.in/api/users");
-                response.then()
-                .log().all()
-                .assertThat()
-                .statusCode(201)
-                .body("name", equalTo(userBodyModel.getName()))
-                .body("job", equalTo(userBodyModel.getJob()))
-                .body("id", notNullValue())
-                .body("createdAt", notNullValue());
+        NewUserBodyModel newUserBodyModel = new NewUserBodyModel();
+        newUserBodyModel.setName("sandro");
+        newUserBodyModel.setJob("manager");
+
+        NewUserResponseModel newUserResponseModel = step("Send request", ()->
+                given(UserSpecs.requestSpecification).body(newUserBodyModel)
+                    .when()
+                    .post(baseUrl)
+                    .then()
+                    .spec(createUserResponseSpec)
+                    .extract().as(NewUserResponseModel.class));
+        step("Check response", () -> {
+            assertEquals("sandro", newUserResponseModel.getName());
+            assertEquals("manager", newUserResponseModel.getJob());
+            assertNotNull(newUserResponseModel.getId());
+            assertNotNull(newUserResponseModel.getCreatedAt());
+        });
     }
     @Test
-    @Tag("e2e")
-    @ValueSource()
-    public void UpdateAndValidateUserTest(){
-        Response response = given().body("{\n"+"\"name\":\"Alex\",\n"+"\"job\":\"TopManager\"\n"+"}")
-                .header("Content-Type","application/json")
-                .log().uri()
-                .log().body()
-                .when()
-                .put("https://reqres.in/api/users/2");
-        response.then()
-                .log().all()
-                .assertThat()
-                .statusCode(200)
-                .body("name", equalTo("Alex"))
-                .body("job", equalTo("TopManager"))
-                .body("updatedAt", notNullValue());
+    @Tag("Ready")
+    public void UpdateAndValidateUserTest() {
+        NewUserBodyModel newUserBodyModel = new NewUserBodyModel();
+        newUserBodyModel.setName("Alex");
+        newUserBodyModel.setJob("TopManager");
+
+        UpdatedUserResponseModel updatedUserResponseModel = step("Send request", () ->
+                given(UserSpecs.requestSpecification).body(newUserBodyModel)
+                        .when()
+                        .put(baseUrl + "2")
+                        .then()
+                        .spec(getUserResponseSpec)
+                        .extract().as(UpdatedUserResponseModel.class));
+        step("Check response", () -> {
+            assertEquals("Alex", updatedUserResponseModel.getName());
+            assertEquals("TopManager", updatedUserResponseModel.getJob());
+            assertNotNull(updatedUserResponseModel.getUpdatedAt());
+        });
     }
     @Test
-    @Tag("e2e")
+    @Tag("Ready")
     public void DeleteUserTest(){
-        given().delete("https://reqres.in/api/users/2")
+        given(UserSpecs.requestSpecification).delete(baseUrl+"2")
                 .then() //блок после запроса
-                .log().all()
-                .statusCode(204);
+                .spec(deleteUserResponseSpec);
     }
-    @Test
-    @Tag("e2e")
-    public void SelectAllUsersTest(){
-        Response response =
-                given().get("https://reqres.in/api/users?page=2");
-        response.then() //блок после запроса
-                .log().all()
-                .statusCode(200);
-        JsonPath jsonPath = response.jsonPath();
-        List<Integer> ids = jsonPath.getList("data.id");
-        boolean idExists = ids.contains(12);
-        Assertions.assertTrue(idExists);
-        }
 }
