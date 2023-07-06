@@ -17,9 +17,9 @@ public class ApiTests {
 
     @Test
     @Tag("Ready")
-    public void GetSingleUserTest(){
+    public void getSingleUserTest(){
        ExistingUserResponseModel existingUser = step("Send request", ()->
-                  given(UserSpecs.requestSpecification).get(baseUrl+"2")
+                  given(requestSpecification).get(baseUrl+"2")
                           .then()
                           .spec(getUserResponseSpec)
                           .extract().as(ExistingUserResponseModel.class));
@@ -28,7 +28,7 @@ public class ApiTests {
     }
     @Test
     @Tag("Ready")
-    public void UserIsNotFoundTest(){
+    public void userIsNotFoundTest(){
         step("Check not found response", ()->
                 given(requestSpecification)
                     .get(baseUrl+"23")
@@ -37,13 +37,13 @@ public class ApiTests {
     }
     @Test
     @Tag("Ready")
-    public void CreateAndValidateUserTest(){
+    public void createAndValidateUserTest(){
         NewUserBodyModel newUserBodyModel = new NewUserBodyModel();
         newUserBodyModel.setName("sandro");
         newUserBodyModel.setJob("manager");
 
         NewUserResponseModel newUserResponseModel = step("Send request", ()->
-                given(UserSpecs.requestSpecification).body(newUserBodyModel)
+                given(requestSpecification).body(newUserBodyModel)
                     .when()
                     .post(baseUrl)
                     .then()
@@ -58,13 +58,13 @@ public class ApiTests {
     }
     @Test
     @Tag("Ready")
-    public void UpdateAndValidateUserTest() {
+    public void updateAndValidateUserTest() {
         NewUserBodyModel newUserBodyModel = new NewUserBodyModel();
         newUserBodyModel.setName("Alex");
         newUserBodyModel.setJob("TopManager");
 
         UpdatedUserResponseModel updatedUserResponseModel = step("Send request", () ->
-                given(UserSpecs.requestSpecification).body(newUserBodyModel)
+                given(requestSpecification).body(newUserBodyModel)
                         .when()
                         .put(baseUrl + "2")
                         .then()
@@ -78,8 +78,8 @@ public class ApiTests {
     }
     @Test
     @Tag("Ready")
-    public void DeleteUserTest(){
-        given(UserSpecs.requestSpecification).delete(baseUrl+"2")
+    public void deleteUserTest(){
+        given(requestSpecification).delete(baseUrl+"2")
                 .then() //блок после запроса
                 .spec(deleteUserResponseSpec);
     }

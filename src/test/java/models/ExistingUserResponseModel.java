@@ -9,27 +9,8 @@ public class ExistingUserResponseModel {
         public String url;
         public String text;
     }
-    public static class Data {
-        public String getId() {
-            return id;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getFirst_name() {
-            return first_name;
-        }
-
-        public String getLast_name() {
-            return last_name;
-        }
-
-        public String getAvatar() {
-            return avatar;
-        }
-
+    @lombok.Data
+    public class Data {
         private String id;
         private String email;
         private String first_name;
