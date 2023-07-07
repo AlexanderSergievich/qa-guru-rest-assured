@@ -2,7 +2,7 @@ https://api.telegram.org/bot6094512848:AAEc_c5rvPEq6Cqqot2mB44z_J9EHC6cJGU/getUp
 // google: "telegram send message api curl"
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{"chat_id": "129158166", "text": "This is a test from qa.guru", "disable_notification": true}' \
-     https://api.telegram.org/6102699870:AAHcRM03A1lqYVd1Ws0pYY-GCG7a87-PB0I/sendMessage
+     -d '{"chat_id": "-1001799697075", "text": "This is a test from qa.guru", "disable_notification": true}' \
+     https://api.telegram.org/6317787842:AAFc3NTNEdehtCrWldCciEauxlLBt5aS3lU/sendMessage
 
 java "-DconfigFile=notifications/config.json" -jar notifications/allure-notifications-4.2.1.jar
