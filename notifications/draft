@@ -1,5 +1,4 @@
-https://api.telegram.org/6102699870:AAHcRM03A1lqYVd1Ws0pYY-GCG7a87-PB0I/getUpdates
-
+https://api.telegram.org/bot6094512848:AAEc_c5rvPEq6Cqqot2mB44z_J9EHC6cJGU/getUpdates
 // google: "telegram send message api curl"
 curl -X POST \
      -H 'Content-Type: application/json' \
