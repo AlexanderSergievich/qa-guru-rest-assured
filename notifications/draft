@@ -1,0 +1,9 @@
+https://api.telegram.org/6102699870:AAHcRM03A1lqYVd1Ws0pYY-GCG7a87-PB0I/getUpdates
+
+// google: "telegram send message api curl"
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"chat_id": "129158166", "text": "This is a test from qa.guru", "disable_notification": true}' \
+     https://api.telegram.org/6102699870:AAHcRM03A1lqYVd1Ws0pYY-GCG7a87-PB0I/sendMessage
+
+java "-DconfigFile=notifications/config.json" -jar notifications/allure-notifications-4.2.1.jar
